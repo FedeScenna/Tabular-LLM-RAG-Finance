@@ -1,0 +1,6 @@
+# ignore ALL .log files
+*.gzip
+*.csv
+*.db
+# ignore ALL files in ANY directory named temp
+data/ 
