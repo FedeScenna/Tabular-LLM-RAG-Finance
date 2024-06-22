@@ -1,4 +1,4 @@
-### LLM for finance data
+### LLM for financial data
 
 The aim of this project is to fine-tune an LLM with financial tabular data.
 Also, incorporate information generated from ML models.
