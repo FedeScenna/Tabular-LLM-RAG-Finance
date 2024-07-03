@@ -14,7 +14,7 @@ Ideally, expand on tabular data and incorporate fundamentals.
 
 * [FinGPT: Open-Source Financial Large Language Models](https://arxiv.org/pdf/2306.06031)
 * [Attention is all you need](https://proceedings.neurips.cc/paper_files/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf)
-* [TAT-LLM: A Specialized Language Model for Discrete Reasoning over Tabular and Textual Data](https://arxiv.org/abs/2401.13223)
+* [TAT-LLM: A Specialized Language Model for Discrete Reasoning over Tabular and Textual Data](https://arxiv.org/pdf/2401.13223)
 
 ### Videos
 
@@ -35,6 +35,7 @@ https://huggingface.co/meta-llama/Meta-Llama-Guard-2-8B
 ### Articulos
 
 [Tabular Data, RAG, & LLMs: Improve Results Through Data Table Prompting](https://medium.com/intel-tech/tabular-data-rag-llms-improve-results-through-data-table-prompting-bcb42678914b)
+
 
 ### Conferences?
 

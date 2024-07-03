@@ -2,5 +2,6 @@
 *.gzip
 *.csv
 *.db
+*.yaml
 # ignore ALL files in ANY directory named temp
 data/ 
