@@ -1,9 +1,9 @@
 ### LLM for financial data
 
-The aim of this project is to fine-tune an LLM with financial tabular data.
+The aim of this project is to fine-tune an LLM with financial tabular and textual data.
 Also, incorporate information generated from ML models.
-Ideally, expand on tabular data and incorporate fundamentals.
 
+The rationale is that there is an increasing interest in small LLMS for 
 **Deliverable**: Python web app (streamlit or gradio) able to interact. 
 
 ### Recursos
@@ -39,6 +39,7 @@ https://huggingface.co/meta-llama/Meta-Llama-Guard-2-8B
 
 [Tabular Data, RAG, & LLMs: Improve Results Through Data Table Prompting](https://medium.com/intel-tech/tabular-data-rag-llms-improve-results-through-data-table-prompting-bcb42678914b)
 
+[Small LLMS Hugging Face](https://huggingface.co/blog/smollm)
 
 ### Conferences?
 
