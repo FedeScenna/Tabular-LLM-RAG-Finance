@@ -16,15 +16,17 @@ The rationale is that there is an increasing interest in small LLMS for
 * [Attention is all you need](https://proceedings.neurips.cc/paper_files/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf)
 * [TAT-LLM: A Specialized Language Model for Discrete Reasoning over Tabular and Textual Data](https://arxiv.org/pdf/2401.13223)
 * [Financial Statement Analysis with Large Language Models](https://bfi.uchicago.edu/working-paper/financial-statement-analysis-with-large-language-models/)
+* [In Defense of RAG in the Era of Long-Context Language Models](https://arxiv.org/pdf/2409.01666)
 
 ### Videos
 
-[ Table-GPT by Microsoft: Empower LLMs To Understand Tables ](https://www.youtube.com/watch?v=yGL0XZlGA0I)
-[Algorithmic Trading – Machine Learning & Quant Strategies Course with Python](https://www.youtube.com/watch?v=9Y3yaoi9rUQ&t=1094s)
-[Fine Tuning LLM Models – Generative AI Course](https://www.youtube.com/watch?v=iOdFUJiB0Zc)
-[Fine-tuning de grandes modelos de lenguaje con Manuel Romero | Hackathon Somos NLP 2023](https://www.youtube.com/watch?v=WYcJb8gYBZU&t=799s)
-[Agentic RAG for stock trading using Llama Index](https://www.youtube.com/watch?v=uOLhleiOM84)
-[Agentic RAG for stock trading using Llama Index - Notebook](https://github.com/adidror005/youtube-videos/blob/main/AI%20Trading%20Assistant%20Actual.ipynb)
+* [Table-GPT by Microsoft: Empower LLMs To Understand Tables ](https://www.youtube.com/watch?v=yGL0XZlGA0I)
+* [Algorithmic Trading – Machine Learning & Quant Strategies Course with Python](https://www.youtube.com/watch?v=9Y3yaoi9rUQ&t=1094s)
+* [Fine Tuning LLM Models – Generative AI Course](https://www.youtube.com/watch?v=iOdFUJiB0Zc)
+* [Fine-tuning de grandes modelos de lenguaje con Manuel Romero | Hackathon Somos NLP 2023](https://www.youtube.com/watch?v=WYcJb8gYBZU&t=799s)
+* [Agentic RAG for stock trading using Llama Index](https://www.youtube.com/watch?v=uOLhleiOM84)
+* [Agentic RAG for stock trading using Llama Index - Notebook](https://github.com/adidror005/youtube-videos/blob/main/AI%20Trading%20Assistant%20Actual.ipynb)
+* [ Building LLMs from the Ground Up: A 3-hour Coding Workshop ](https://www.youtube.com/watch?v=quh7z1q7-uc&t=242s)
 
 ### Libros
 
@@ -38,7 +40,7 @@ https://huggingface.co/meta-llama/Meta-Llama-Guard-2-8B
 ### Articulos
 
 [Tabular Data, RAG, & LLMs: Improve Results Through Data Table Prompting](https://medium.com/intel-tech/tabular-data-rag-llms-improve-results-through-data-table-prompting-bcb42678914b)
-
+[LLM Reading list](https://sebastianraschka.com/blog/2023/llm-reading-list.html)
 [Small LLMS Hugging Face](https://huggingface.co/blog/smollm)
 
 ### Conferences?
