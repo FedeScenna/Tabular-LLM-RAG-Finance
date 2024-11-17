@@ -9,7 +9,7 @@ def calculate_returns(df):
 
     for lag in lags:
 
-        df[f'return_{lag}m'] = (df['adj close']
+        df[f'return_{lag}d'] = (df['adj close']
                               .pct_change(lag)
                               .pipe(lambda x: x.clip(lower=x.quantile(outlier_cutoff),
                                                      upper=x.quantile(1-outlier_cutoff)))
