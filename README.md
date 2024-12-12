@@ -17,6 +17,10 @@ The rationale is that there is an increasing interest in small LLMS for
 * [TAT-LLM: A Specialized Language Model for Discrete Reasoning over Tabular and Textual Data](https://arxiv.org/pdf/2401.13223)
 * [Financial Statement Analysis with Large Language Models](https://bfi.uchicago.edu/working-paper/financial-statement-analysis-with-large-language-models/)
 * [In Defense of RAG in the Era of Long-Context Language Models](https://arxiv.org/pdf/2409.01666)
+* [BloombergGPT](https://arxiv.org/abs/2303.17564)
+* [Other Worlds: Using AI to Revisit Cybersyn and Rethink Economic Futures](https://arxiv.org/pdf/2411.05992)
+* [Large Language Models in Finance: A Survey](https://dl.acm.org/doi/pdf/10.1145/3604237.3626869)
+* [FinBERT: A Large Language Model for Extracting Information from Financial Text](https://onlinelibrary.wiley.com/doi/10.1111/1911-3846.12832)
 
 ### Videos
 
