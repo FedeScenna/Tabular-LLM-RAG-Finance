@@ -6,6 +6,12 @@ Also, incorporate information generated from ML models.
 The rationale is that there is an increasing interest in small LLMS for 
 **Deliverable**: Python web app (streamlit or gradio) able to interact. 
 
+
+
+
+
+
+
 ### Recursos
 
 [Github Papers Tabular LLM](https://github.com/SpursGoZmy/Awesome-Tabular-LLMs)
