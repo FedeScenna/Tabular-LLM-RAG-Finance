@@ -52,9 +52,11 @@ https://huggingface.co/meta-llama/Meta-Llama-Guard-2-8B
 [Tabular Data, RAG, & LLMs: Improve Results Through Data Table Prompting](https://medium.com/intel-tech/tabular-data-rag-llms-improve-results-through-data-table-prompting-bcb42678914b)
 [LLM Reading list](https://sebastianraschka.com/blog/2023/llm-reading-list.html)
 [Small LLMS Hugging Face](https://huggingface.co/blog/smollm)
+[Building a GraphRAG Agent With Neo4j and Milvus](https://neo4j.com/developer-blog/graphrag-agent-neo4j-milvus/)
 
 ### Conferences?
 
 NLP conferences?
 Pytorch conf?
 Nerdearla
+Neo4j o graph conferences?
