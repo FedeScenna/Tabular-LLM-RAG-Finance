@@ -9,3 +9,5 @@ data/*
 data/
 bibliography/
 .gradio/*
+fin_rag/__pycache__/*
+pdf_rag/__pycache__/*
