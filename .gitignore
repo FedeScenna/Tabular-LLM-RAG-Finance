@@ -12,3 +12,4 @@ bibliography/
 fin_rag/__pycache__/*
 pdf_rag/__pycache__/*
 embeddings/*
+embeddings
