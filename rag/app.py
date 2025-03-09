@@ -2,7 +2,7 @@ import streamlit as st
 import os
 import sys
 import traceback
-
+from utils import check_ollama_server, check_gpu, load_vector_store, get_conversation_chain
 # Initialize session state variables
 if 'conversation' not in st.session_state:
     st.session_state.conversation = None

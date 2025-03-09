@@ -1,15 +1,15 @@
-
 import requests
 import traceback
 import torch
+import streamlit as st
 from langchain_ollama import OllamaEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain.memory import ConversationBufferMemory
 from langchain_community.llms import Ollama
 from langchain.chains import ConversationalRetrievalChain
 from langchain.callbacks.manager import CallbackManager
-from langchain.callbacks.manager import CallbackManager
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
+from langchain.prompts import PromptTemplate
 
 def check_ollama_server():
     """Check if Ollama server is running."""
@@ -78,6 +78,24 @@ def get_conversation_chain(vector_store, model_name="llama3:8b", temperature=0.7
         # Initialize Ollama with the selected model
         callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
         
+        # Define the custom prompt template for financial assistance
+        financial_template = """
+        You are an expert financial assistant specializing in providing concise and accurate answers about companies in the S&P 500 index. Use the provided context to generate responses. If the context does not contain relevant information, state that you do not have enough data rather than making assumptions. Ensure responses are factual, clear, and to the point.
+        
+        Context: {context}
+        
+        Chat History: {chat_history}
+        
+        Question: {question}
+        
+        Answer:"""
+        
+        # Create the prompt template
+        PROMPT = PromptTemplate(
+            template=financial_template,
+            input_variables=["context", "chat_history", "question"]
+        )
+        
         llm = Ollama(
             model=model_name, 
             temperature=temperature,
@@ -95,6 +113,7 @@ def get_conversation_chain(vector_store, model_name="llama3:8b", temperature=0.7
             retriever=vector_store.as_retriever(search_kwargs={"k": 3}),
             memory=memory,
             return_source_documents=True,
+            combine_docs_chain_kwargs={"prompt": PROMPT},
             verbose=True  # Enable verbose mode for debugging
         )
         return conversation_chain
