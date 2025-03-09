@@ -1,61 +1,31 @@
 import streamlit as st
 import os
-from langchain_ollama import OllamaEmbeddings
-from langchain_community.vectorstores import FAISS
-from langchain.memory import ConversationBufferMemory
-from langchain_community.llms import Ollama
-from langchain.chains import ConversationalRetrievalChain
-import torch
+import sys
+import traceback
 
 # Initialize session state variables
 if 'conversation' not in st.session_state:
     st.session_state.conversation = None
 if 'chat_history' not in st.session_state:
     st.session_state.chat_history = []
-
-def check_gpu():
-    """Check if GPU is available and return information about it."""
-    if torch.cuda.is_available():
-        device_name = torch.cuda.get_device_name(0)
-        cuda_version = torch.version.cuda
-        return True, f"{device_name} (CUDA {cuda_version})"
-    return False, "Not available"
-
-def load_vector_store(embeddings_dir):
-    """Load the vector store from disk."""
-    # Use OllamaEmbeddings with the same model used for creating embeddings
-    embeddings = OllamaEmbeddings(model="llama3.1:8b")
-    vector_store = FAISS.load_local(embeddings_dir, embeddings, allow_dangerous_deserialization=True)
-    return vector_store
-
-def get_conversation_chain(vector_store):
-    """Create a conversation chain for RAG."""
-    # Initialize Ollama with llama3.2 model
-    llm = Ollama(model="llama3.1:8b", temperature=0.7)
-    
-    memory = ConversationBufferMemory(
-        memory_key='chat_history',
-        return_messages=True,
-        output_key='answer'
-    )
-    
-    conversation_chain = ConversationalRetrievalChain.from_llm(
-        llm=llm,
-        retriever=vector_store.as_retriever(search_kwargs={"k": 3}),
-        memory=memory,
-        return_source_documents=True
-    )
-    return conversation_chain
+if 'debug_info' not in st.session_state:
+    st.session_state.debug_info = ""
 
 # Set page configuration
 st.set_page_config(page_title="Chat with your PDFs", layout="wide")
-st.title("📚 Chat with your PDFs using Llama 3.2")
+st.title("📚 Chat with your PDFs using Llama")
+
+# Check Ollama server
+ollama_running, available_models = check_ollama_server()
+if not ollama_running:
+    st.error("⚠️ Ollama server is not running. Please start Ollama with 'ollama serve' in a terminal.")
+    st.stop()
 
 # Add a note about Ollama
 has_gpu, gpu_info = check_gpu()
 gpu_status = f"🔥 GPU Acceleration: {gpu_info}" if has_gpu else "⚠️ GPU not detected, using CPU"
 
-st.info(f"This application uses Llama 3.2 (1B parameters) via Ollama for local inference. {gpu_status}")
+st.info(f"This application uses Llama via Ollama for local inference. {gpu_status}")
 
 # Sidebar for embeddings directory selection
 with st.sidebar:
@@ -88,9 +58,15 @@ with st.sidebar:
     # Display the selected path
     st.caption(f"Selected path: {os.path.abspath(embeddings_dir)}")
     
+    # Show available models from Ollama
+    if available_models:
+        model_options = available_models
+    else:
+        model_options = ["llama3:8b", "llama3:70b", "llama2", "mistral"]
+    
     model_name = st.selectbox(
         "Select Ollama Model:",
-        ["llama3.1:8b", "llama3.2:1b"],
+        model_options,
         index=0,
         help="Select the model to use for answering questions. Make sure it's available in your Ollama installation."
     )
@@ -108,23 +84,18 @@ with st.sidebar:
         if os.path.exists(embeddings_dir):
             with st.spinner("Loading embeddings..."):
                 try:
-                    vector_store = load_vector_store(embeddings_dir)
+                    vector_store = load_vector_store(embeddings_dir, model_name)
                     # Update the conversation with the selected model and temperature
-                    llm = Ollama(model=model_name, temperature=temperature)
-                    memory = ConversationBufferMemory(
-                        memory_key='chat_history',
-                        return_messages=True,
-                        output_key='answer'
-                    )
-                    st.session_state.conversation = ConversationalRetrievalChain.from_llm(
-                        llm=llm,
-                        retriever=vector_store.as_retriever(search_kwargs={"k": 3}),
-                        memory=memory,
-                        return_source_documents=True
+                    st.session_state.conversation = get_conversation_chain(
+                        vector_store, 
+                        model_name=model_name, 
+                        temperature=temperature
                     )
                     st.success("Embeddings loaded successfully!")
                 except Exception as e:
                     st.error(f"Error loading embeddings: {str(e)}")
+                    with st.expander("Debug Information"):
+                        st.code(st.session_state.debug_info)
         else:
             st.error(f"Directory {embeddings_dir} does not exist. Please process your documents first using process_documents.py")
 
@@ -147,8 +118,25 @@ if st.session_state.conversation is not None:
                             st.markdown(f"**Source {i+1}:**")
                             st.markdown(f"```\n{doc.page_content}\n```")
                             st.markdown("---")
+            except AssertionError as e:
+                # This is likely a dimension mismatch error
+                error_msg = "Dimension mismatch error: The embedding model used for querying doesn't match the one used for creating the index."
+                st.error(error_msg)
+                st.warning("Try reloading with the model 'llama3.2:1b' which was likely used to create the embeddings.")
+                
+                # Capture and display the full traceback
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                error_details = ''.join(traceback.format_exception(exc_type, exc_value, exc_traceback))
+                with st.expander("Error Details"):
+                    st.code(error_details)
             except Exception as e:
-                st.error(f"Error generating response: {str(e)}")
+                error_msg = f"Error generating response: {str(e)}"
+                st.error(error_msg)
+                # Capture and display the full traceback
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                error_details = ''.join(traceback.format_exception(exc_type, exc_value, exc_traceback))
+                with st.expander("Error Details"):
+                    st.code(error_details)
 
     # Display chat history
     for i, (role, message) in enumerate(reversed(st.session_state.chat_history)):
@@ -159,4 +147,19 @@ if st.session_state.conversation is not None:
         else:
             st.write(f"🤖 **Assistant:** {message}")
 else:
-    st.info("Please load your embeddings to start chatting!") 
+    st.info("Please load your embeddings to start chatting!")
+
+# Add debug expander at the bottom
+with st.expander("Advanced Settings & Debug"):
+    st.write("If you're experiencing issues, check the following:")
+    st.write("1. Make sure Ollama is running (`ollama serve` in terminal)")
+    st.write("2. Verify the model you selected is available in Ollama (`ollama list`)")
+    st.write("3. Check that the embeddings directory contains valid FAISS index files")
+    
+    if st.button("Check Ollama Status"):
+        ollama_running, models = check_ollama_server()
+        if ollama_running:
+            st.success(f"✅ Ollama is running with {len(models)} models available")
+            st.write("Available models:", ", ".join(models))
+        else:
+            st.error("❌ Ollama server is not running or not responding") 
