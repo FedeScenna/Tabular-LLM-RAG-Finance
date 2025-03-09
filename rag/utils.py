@@ -53,17 +53,17 @@ def load_vector_store(embeddings_dir, model_name="llama3:8b"):
                         embeddings = OllamaEmbeddings(model=original_model)
                     else:
                         # If no model info, use the model that created the embeddings
-                        # This is likely "llama3.2:1b" based on your process_documents.py
-                        embeddings = OllamaEmbeddings(model="llama3.2:1b")
-                        st.warning("Using default embedding model: llama3.2:1b")
+                        # This is "llama3.1:8b" based on user information
+                        embeddings = OllamaEmbeddings(model="llama3.1:8b")
+                        st.warning("Using default embedding model: llama3.1:8b")
             else:
                 # If no metadata file, use the model that created the embeddings
-                embeddings = OllamaEmbeddings(model="llama3.2:1b")
-                st.warning("Using default embedding model: llama3.2:1b")
+                embeddings = OllamaEmbeddings(model="llama3.1:8b")
+                st.warning("Using default embedding model: llama3.1:8b")
         except Exception as e:
             # If any error occurs during metadata loading, use the model that created the embeddings
-            st.warning(f"Error loading embedding metadata: {str(e)}. Using default model: llama3.2:1b")
-            embeddings = OllamaEmbeddings(model="llama3.2:1b")
+            st.warning(f"Error loading embedding metadata: {str(e)}. Using default model: llama3.1:8b")
+            embeddings = OllamaEmbeddings(model="llama3.1:8b")
         
         # Load the vector store with the determined embeddings
         vector_store = FAISS.load_local(embeddings_dir, embeddings, allow_dangerous_deserialization=True)

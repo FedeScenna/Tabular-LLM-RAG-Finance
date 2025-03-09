@@ -8,3 +8,4 @@
 data/*
 bibliography/
 embeddings/*
+rag\__pycache__

@@ -139,7 +139,7 @@ def process_directory(input_dir, output_dir, num_processes=None, batch_size=None
     
     # Create Ollama embeddings instance
     embeddings = OllamaEmbeddings(
-        model="llama3.2:1b"  # Ensure this model supports GPU
+        model="llama3.1:8b"  # Ensure this model supports GPU
     )
     
     # Process embeddings in batches
