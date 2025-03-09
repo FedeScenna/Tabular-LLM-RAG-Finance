@@ -1,13 +1,46 @@
 import os
 from PyPDF2 import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.embeddings import OllamaEmbeddings
+from langchain_ollama import OllamaEmbeddings
 from langchain_community.vectorstores import FAISS
 import argparse
 from tqdm import tqdm
 from multiprocessing import Pool, cpu_count
-from functools import partial
 import numpy as np
+import torch
+import gc
+import pynvml
+
+def check_gpu():
+    """Check if GPU is available and return information about it."""
+    if not torch.cuda.is_available():
+        print("CUDA is not available. Using CPU.")
+        return False, None, None
+    
+    try:
+        pynvml.nvmlInit()
+        handle = pynvml.nvmlDeviceGetHandleByIndex(0)
+        info = pynvml.nvmlDeviceGetMemoryInfo(handle)
+        device_name = pynvml.nvmlDeviceGetName(handle)
+        
+        total_memory = info.total / 1024**3  # Convert to GB
+        free_memory = info.free / 1024**3    # Convert to GB
+        
+        print(f"GPU: {device_name}")
+        print(f"CUDA Version: {torch.version.cuda}")
+        print(f"Total GPU Memory: {total_memory:.2f} GB")
+        print(f"Free GPU Memory: {free_memory:.2f} GB")
+        
+        return True, device_name, free_memory
+    except Exception as e:
+        print(f"Error getting GPU information: {str(e)}")
+        print("Using CUDA without detailed GPU information.")
+        return True, "Unknown", None
+    finally:
+        try:
+            pynvml.nvmlShutdown()
+        except:
+            pass
 
 def process_pdf(pdf_path):
     """Process a single PDF document and return its text content."""
@@ -22,18 +55,29 @@ def process_pdf(pdf_path):
         print(f"Error processing {pdf_path}: {str(e)}")
         return ""
 
-def batch_process_texts(texts, embeddings_model, batch_size=32):
+def batch_process_texts(texts, embeddings_model, batch_size=32, device="cpu"):
     """Process texts in batches to generate embeddings."""
     embeddings_list = []
     
+    # Adjust batch size based on device
+    if device == "cuda":
+        # Use smaller batches for GPU to avoid OOM errors
+        batch_size = min(batch_size, 16)
+    
     for i in tqdm(range(0, len(texts), batch_size), desc="Generating embeddings", unit="batch"):
         batch = texts[i:i + batch_size]
+        
+        # Clear CUDA cache between batches if using GPU
+        if device == "cuda":
+            torch.cuda.empty_cache()
+            gc.collect()
+            
         batch_embeddings = embeddings_model.embed_documents(batch)
         embeddings_list.extend(batch_embeddings)
     
     return embeddings_list
 
-def process_directory(input_dir, output_dir, num_processes=None):
+def process_directory(input_dir, output_dir, num_processes=None, batch_size=None, force_cpu=False):
     """Process all PDFs in a directory and save their embeddings."""
     if num_processes is None:
         num_processes = max(1, cpu_count() - 1)  # Leave one CPU free
@@ -74,14 +118,32 @@ def process_directory(input_dir, output_dir, num_processes=None):
     chunks = text_splitter.split_text(all_text)
     print(f"Created {len(chunks)} text chunks")
     
-    # Create vector store using Ollama embeddings with batch processing
+    # Check GPU availability and get information
+    has_gpu, gpu_name, free_memory = check_gpu()
+    
+    # Set device based on availability and user preference
+    device = "cpu" if force_cpu or not has_gpu else "cuda"
+    torch_device = torch.device(device)
+    
+    # Determine optimal batch size if not specified
+    if batch_size is None:
+        if device == "cuda" and free_memory is not None:
+            # Heuristic: 1GB of VRAM can handle ~64 embeddings at once for most models
+            # Adjust based on your specific model and embedding size
+            batch_size = max(4, min(64, int(free_memory * 64)))
+        else:
+            batch_size = 32
+    
+    print(f"Using device: {device}")
+    print(f"Batch size: {batch_size}")
+    
+    # Create Ollama embeddings instance
     embeddings = OllamaEmbeddings(
-        model="llama3.2:1b",
-        show_progress=True,
+        model="llama3.2:1b"  # Ensure this model supports GPU
     )
     
     # Process embeddings in batches
-    embeddings_list = batch_process_texts(chunks, embeddings)
+    embeddings_list = batch_process_texts(chunks, embeddings, batch_size=batch_size, device=device)
     
     # Create FAISS index
     print("Creating FAISS index...")
@@ -99,6 +161,8 @@ if __name__ == "__main__":
     parser.add_argument("--input_dir", required=True, help="Directory containing PDF files")
     parser.add_argument("--output_dir", required=True, help="Directory to save embeddings")
     parser.add_argument("--processes", type=int, default=None, help="Number of processes to use (default: CPU count - 1)")
+    parser.add_argument("--batch_size", type=int, default=None, help="Batch size for embedding generation (default: auto)")
+    parser.add_argument("--force_cpu", action="store_true", help="Force CPU usage even if GPU is available")
     args = parser.parse_args()
     
-    process_directory(args.input_dir, args.output_dir, args.processes) 
+    process_directory(args.input_dir, args.output_dir, args.processes, args.batch_size, args.force_cpu)
