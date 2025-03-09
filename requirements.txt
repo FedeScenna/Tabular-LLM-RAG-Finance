@@ -1,3 +1,4 @@
+# Core dependencies
 beautifulsoup4==4.13.3
 fpdf==1.7.2
 langchain==0.3.20
@@ -15,11 +16,19 @@ Requests==2.32.3
 statsmodels==0.14.4
 streamlit==1.43.0
 tqdm==4.67.1
-pynvml
 yfinance==0.2.54
-# PyTorch with CUDA 12.7 support
+pynvml==11.5.0
+Pillow==10.2.0
+
+# PyTorch with CUDA support
 --extra-index-url https://download.pytorch.org/whl/cu127
 torch>=2.2.0
-# GPU support for FAISS
-# CUDA utilities
-nvidia-ml-py3
+
+# Vector database
+faiss-gpu
+
+# Development dependencies
+pytest==7.4.3
+black==23.11.0
+isort==5.12.0
+flake8==6.1.0
